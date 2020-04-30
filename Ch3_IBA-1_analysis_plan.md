@@ -23,8 +23,8 @@
       - [x] Sieun email image naming convention to Pierre
       - [ ] Pierre make sure naming correct 
     - [ ] Image access? Is everything there & properly organized? 
-      - [ ] Eleanor copy volunteer-1 folder to inside the Brain Canada folder, and email me & Pierre, 
-      - [ ] Joanne to email Jonathan for Pierre, Tyler to access the Brain Canada folder or alternative
+      - [x] Eleanor copy volunteer-1 folder to inside the Brain Canada folder, and email me & Pierre, 
+      - [x] Joanne to email Jonathan for Pierre, Tyler to access the Brain Canada folder or alternative
       - [ ] Pierre check data organization
     - [ ] Image acquisition consistent, magnification, across diff. machines, person, etc.? - Pierre  
     * 5 AD eyes, 5 control eyes
