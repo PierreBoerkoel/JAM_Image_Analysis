@@ -12,6 +12,13 @@
 
   * Data
     - [x] Image quality control 
+    * Image file naming convention - ex. TUBB 2011-040 A C2 COMBO.extension 
+       * TUBB: The type of (specific) marker 
+       * 2011-040: Subject ID 
+       * A: Section # 
+       * C: Central (P for peripheral) 
+       * 2: Repeat #
+       * COMBO: Image RGB Channel - COMBO = All of RGB
     - [ ] Image naming correct? 
       - [ ] Sieun email image naming convention to Pierre
       - [ ] Pierre make sure naming correct 
