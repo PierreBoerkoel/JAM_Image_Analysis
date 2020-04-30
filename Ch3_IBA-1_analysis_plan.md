@@ -20,7 +20,7 @@
        * 2: Repeat #
        * COMBO: Image RGB Channel - COMBO = All of RGB
     - [ ] Image naming correct? 
-      - [ ] Sieun email image naming convention to Pierre
+      - [x] Sieun email image naming convention to Pierre
       - [ ] Pierre make sure naming correct 
     - [ ] Image access? Is everything there & properly organized? 
       - [ ] Eleanor copy volunteer-1 folder to inside the Brain Canada folder, and email me & Pierre, 
