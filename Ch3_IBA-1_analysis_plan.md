@@ -44,12 +44,14 @@
       - [x] Eleanor copy volunteer-1 folder to inside the Brain Canada folder, and email me & Pierre, 
       - [x] Joanne to email Jonathan for Pierre, Tyler to access the Brain Canada folder or alternative
       - [ ] Pierre check data organization
-    - [ ] Image acquisition consistent, magnification, across diff. machines, person, etc.? - Pierre  
+    - [ ] Image acquisition consistent, magnification, across diff. machines, person, etc.? - Pierre 
+  * Analysis
+    * Manual segmentation
+      - [ ] Q. Can Zen export .czi file to a format that can be opened & segmented in ITK-Snap? Or any other software that can be used for manual segmentation?  
        
 * Analysis plan 
    1. load the image
    2. manual layer segmentation - Alis & Tyler 
-     - [ ] Sieun to get images to convert to nifti (.nii) format
    3. apply layer segmentation to the image 
    4. threshold Red, Green, Blue /layer
    5. measure thickness /layer
