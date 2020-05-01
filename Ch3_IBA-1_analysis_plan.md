@@ -20,6 +20,13 @@
       * C: Central (P for peripheral) 
       * 2: Repeat #
       * COMBO: Image RGB Channel - COMBO = All of RGB  
+    * Data organiziation convention
+      * Set #
+        * File type
+          * Subject ID
+            * IBA-1 06-0288 A C1 COMBO
+            * IBA-1 06-0288 A C2 COMBO
+            * ...
   * Quantitative parameters
     * Layer-wise thickness
     * Layer-wise staining of IBA-1 and BA4
