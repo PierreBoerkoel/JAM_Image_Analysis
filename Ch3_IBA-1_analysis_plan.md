@@ -36,21 +36,21 @@
   * Data acquisition
     - [x] Immunohistochemistry  
     - [x] Confocal microscopy
-    - [ ] Image quality control & adjustment - Set 2 done, Set 1 to by completed by Tyler today   
+    - [x] Image quality control & adjustment - Set 2 done, Set 1 to by completed by Tyler today   
   * Data QA
     - [x] Sieun email image naming convention to Pierre
-    - [ ] Pierre make sure naming correct 
-    - [ ] Image access? Is everything there & properly organized? 
+    - [x] Pierre make sure naming correct 
+    - [x] Image access? Is everything there & properly organized? 
       - [x] Eleanor copy volunteer-1 folder to inside the Brain Canada folder, and email me & Pierre, 
       - [x] Joanne to email Jonathan for Pierre, Tyler to access the Brain Canada folder or alternative
-      - [ ] Pierre check data organization
+      - [x] Pierre check data organization
     - [ ] Image acquisition consistent, magnification, across diff. machines, person, etc.? - Pierre 
   * Analysis
     * Manual segmentation
-      - [ ] Q. Can Zen export .czi file to a format that can be opened & segmented in ITK-Snap? Or any other software that can be used for manual segmentation?  
+      - [x] Q. Can Zen export .czi file to a format that can be opened & segmented in ITK-Snap? Or any other software that can be used for manual segmentation? Yes! 
        
 * Analysis plan 
-   1. load the image
+   1. image
    2. manual layer segmentation - Alis & Tyler 
    3. apply layer segmentation to the image 
    4. threshold Red, Green, Blue /layer
