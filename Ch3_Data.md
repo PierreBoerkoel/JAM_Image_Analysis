@@ -7,8 +7,8 @@ Detailed list: https://docs.google.com/spreadsheets/d/1aO-b2anlJ2LU6KLsp_8Qi2f-N
     * 2008-37
     * 2011-166
     * 2007-361
-    * 06-209L (Tyler's set only)
-    * 2007-378 (Tyler's set only) *Missing B
+    * 06-209L (Tyler's set only - exclude from main analysis)
+    * 2007-378 (Tyler's set only - exclude from main analysis) *Missing B
   * Alzheimer's Disease n = 5
     * NR12-55
     * VA15-02
