@@ -1,6 +1,9 @@
 Detailed list: https://docs.google.com/spreadsheets/d/1aO-b2anlJ2LU6KLsp_8Qi2f-NxdnOfk9LDnWhEPSxRs/edit?usp=sharing
 
 * IBA-1 (2 sets - Alis and Tyler)
+  * File locations
+    * Alis's: Teamshare:\Ch3 -- IBA-1\For Sieun Apr 30, 2020 Tif to Convert to Nii
+    * Tyler's: Teamshare:\Ch3 -- IBA-1\for Tyler from Eleanor
   * Normal n = 7
     * 06-0213
     * 06-0288
@@ -17,6 +20,9 @@ Detailed list: https://docs.google.com/spreadsheets/d/1aO-b2anlJ2LU6KLsp_8Qi2f-N
     * VA15-37
 
 * TUBB (1 set)
+  * File locations
+    * Alice's: Teamshare:\Ch3\For Sieun Oct 19, 2019 only and all the images that will be input to the analysis program\Analysis - Intensity Threshold Group TUBB Cross-section Images (Alice Liu)
+    * Geoffrey's: Teamshare:\Ch3\For Sieun Oct 19, 2019 only and all the images that will be input to the analysis program\Analysis - Intensity Threshold Group GFAP + TUBB New Normals (Geoffrey)\TUBB
   * Normal n = 6
     * 2006-0213 (Alice)
     * 2006-0288 (Alice)
@@ -32,6 +38,9 @@ Detailed list: https://docs.google.com/spreadsheets/d/1aO-b2anlJ2LU6KLsp_8Qi2f-N
     * VA15-37 *Missing B
 
 * GFAP (1 set - Geoffrey)
+  * File locations
+    * 2011-***: Teamshare:\Ch3\For Sieun Oct 19, 2019 only and all the images that will be input to the analysis program\Analysis - Intensity Threshold Group GFAP + TUBB New Normals (Geoffrey)\GFAP
+    * Rest: Teamshare:\Ch3\For Sieun Oct 19, 2019 only and all the images that will be input to the analysis program\Analysis - Intensity Threshold Group GFAP Cross-section Images (Geoffrey)
   * Normal n = 7
     * 2006-0213
     * 2006-0288
