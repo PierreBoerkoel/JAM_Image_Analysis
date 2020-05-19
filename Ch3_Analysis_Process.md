@@ -1,12 +1,10 @@
 1. Data acquisition, QA, and organiziation 
 2. Manual layer segmentation - see a separate doc 
 3. Analysis program 
-  * Input
-    * Input data path
-      * The given location should contain 
-        * Tif (.tif) files of original images 
-        * Nifti (.nii) files of layer segmentation images
-      * The name of the last directory is used for output naming 
-      * The code processes all *COMBO.tif, and all of their corresponding *seg.nii
-    * Threashold values
-    * Output path 
+  * Input: Original image, layer segmentation image, red & green staining intensity threshold values 
+  * Output: Tables for layer thickness, red staining, green staining, red & green colocalization 
+  * Algorithm
+    1. Binarize the original image using the threshold values 
+    2. Divide the original image into layers using the segmentation image
+    3. Calculate the noramlizaed staining (by %), colocalization 
+    4. Save 
