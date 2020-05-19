@@ -1,7 +1,9 @@
 * Data acquisition
   - Immunohistochemistry  
   - Confocal microscopy
-  - Post-acquisition image quality control & adjustment    
+  - Post-acquisition image quality control & adjustment
+    - Image intensity
+    - Image orientation: Are the images right-side-up (RNFL at the top) and as horizontal as possible? (Layer not extending vertically)
 
 * Data QA 
   - Is the data stored in a correct location? (i.e. Teamshare)
@@ -18,3 +20,6 @@
     - imaging setting 
     - image resolution / magnification  
      
+--------- After layer segmentation -----------
+* Manual layer segmentation 
+  - Are the layer segmentation image in the same orientation as the original image? 
