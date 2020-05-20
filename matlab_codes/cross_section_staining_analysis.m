@@ -227,7 +227,7 @@ save(fullfile(outfolder,outputfile_name), 'imagefolder', 'pixres', 'Cy3threshold
      'labeltable_unique', 'thickum_unique', 'cy3norm_unique', 'fitcnorm_unique', 'cy3per_fitc_unique', 'cy3per_fitcn_unique', 'cy3per_fitcratio_unique');
 csvfolder = outfolder;  
 
-writetable(cell2table(labeltable_unique),fullfile(csvfolder,[groupname,'_','labeltable_unique.csv
+writetable(cell2table(labeltable_unique),fullfile(csvfolder,[groupname,'_','labeltable_unique.csv']));
 writetable(array2table(cy3norm_unique),fullfile(csvfolder,[groupname,'_','cy3norm_unique.csv']));
 writetable(array2table(fitcnorm_unique),fullfile(csvfolder,[groupname,'_','fitcnorm_unique.csv'])); 
 writetable(array2table(thickum_unique), fullfile(csvfolder,[groupname,'_','thickum_unique.csv'])); 
