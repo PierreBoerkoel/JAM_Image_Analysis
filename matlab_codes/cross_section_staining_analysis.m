@@ -27,7 +27,7 @@ cd(imagefolder);
 
 % get list 
 imglist = dir('**/*COMBO.tif');
-seglist = dir('**/*seg.tif');
+seglist = dir('**/*seg.nii');
 imgnames = extractfield(imglist,'name');
 segnames = extractfield(seglist,'name'); 
 
@@ -80,7 +80,7 @@ for i = 1:length(imglist)
 
     % 4. Layers - read nii data
     segind = find(contains(segnames,imgnames{i}(1:end-4)));
-    I= imread(fullfile(seglist(segind).folder,seglist(segind).name));
+    I= niftiread(fullfile(seglist(segind).folder,seglist(segind).name));
     I = transpose(I);
     
     % quality check 1/3: rotation 
