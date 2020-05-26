@@ -25,7 +25,7 @@ function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshol
 [tmp1, groupname, tmp2] = fileparts(imagefolder); clear tmp1 tmp2; 
 cd(imagefolder); 
 
-% get list 
+% get list
 imglist = dir('**/*COMBO.tif');
 seglist = dir('**/*seg.nii');
 imgnames = extractfield(imglist,'name');
