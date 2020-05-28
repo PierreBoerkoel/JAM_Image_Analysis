@@ -58,15 +58,21 @@ for i = 1:length(imglist)
 
     
     % 1. create a cy3 (red) mask 
-    Iimg= imread(fullfile(imglist(i).folder,imglist(i).name)); Iimg = Iimg(:,:,1:3); 
-    if all(size(Iimg) == [1104 1376 3])
+    Iimg= imread(fullfile(imglist(i).folder,imglist(i).name)); Iimg = Iimg(:,:,1:3);
+    imgSize = size(Iimg);
+    if all(imgSize == [1104 1376 3])
         pixres = 0.454;
-    elseif all(size(Iimg) == [1376 1104 3])
+    elseif all(imgSize == [1376 1104 3])
         pixres = 0.454;
-    elseif all(size(Iimg) == [1024 1024 3])
-        pixres = 0.44; 
-    end 
-    
+    elseif all(imgSize == [1024 1024 3])
+        pixres = 0.44;
+    elseif all(imgSize == [2048 2048 3])
+        pixres = 0.156;
+    else
+        errordlg(sprintf('Image size not supported: %s', myfile));
+        error('Image size not supported: %s', myfile);
+    end
+
     Icy3 = Iimg(:,:,1); 
     Icy3_mask = Icy3 > Cy3threshold;
 
@@ -85,28 +91,21 @@ for i = 1:length(imglist)
     
     % quality check 1/3: rotation 
     if ~all([size(Iimg,1) size(Iimg,2)] == size(I))
-        'Image size not matching' 
-        myfile
-%         figure; imagesc(imfuse(Iimg,I)); 
-%         pause; close(gcf);    
-        continue;
+        errordlg(sprintf('Image size not matching: %s.', myfile));
+        error('Image size not matching: %s.', myfile);
     end     
     
     % quality check 2/3: all 7 labels are there
     if ~all(ismember([1:7],I))
-        'Not all 7 labels are there'
-        myfile
-        problemfiles = [problemfiles; myfile]; 
-        continue;
+        errordlg(sprintf('Image %s is missing label(s). Images must have 7 labels.', myfile));
+        error('Image %s is missing label(s). Images must have 7 labels.', myfile);
     end
     
     % quality check 3/3: image is upside down  
     Imid = I(:,size(I,2)/2);
     if mean(find(Imid==1)) > mean(find(Imid==7))
-        'Image is upside down'
-        myfile
-        problemfiles = [problemfiles; myfile]; 
-        continue;
+        errordlg(sprintf('Image %s is not oriented correctly.', myfile));
+        error('Image %s is not oriented correctly.', myfile);
     end
 
     % make layer masks from segmentation 
