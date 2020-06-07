@@ -86,7 +86,7 @@ for i = 1:length(imglist)
 
     % 4. Layers - read nii data
     segind = find(contains(segnames,imgnames{i}(1:end-4)));
-    I= niftiread(fullfile(seglist(segind).folder,seglist(segind).name));
+    I = niftiread(fullfile(seglist(segind).folder,seglist(segind).name));
     I = transpose(I);
     
     % quality check 1/3: rotation 
@@ -119,7 +119,7 @@ for i = 1:length(imglist)
         Ibw = I == myind;
         Iind = X.*Ibw;
         Iind(Iind == 0) = NaN;
-        labelposition= nanmean(Iind,1);
+        labelposition = nanmean(Iind,1);
 
         labelposition_filled = labelposition;
             
@@ -192,11 +192,11 @@ end
 
 % 2. Adjust parameters 
 thickum = thicktable; 
-cy3norm = cy3table./voltable*100;
-fitcnorm = fitctable./voltable*100;
-cy3per_fitc = cy3fitctable./fitctable*100;
-cy3per_fitcn = cy3nfitctable./fitcntable*100;
-cy3per_fitcratio = cy3per_fitc./cy3per_fitcn;  
+cy3norm = cy3table./voltable*100; % (Cy3 pixels / total pixels) * 100
+fitcnorm = fitctable./voltable*100; % (FITC pixels / total pixels) * 100
+cy3per_fitc = cy3fitctable./fitctable*100; % (Cy3 AND FITC pixels / FITC pixels) * 100
+cy3per_fitcn = cy3nfitctable./fitcntable*100; % (Cy3 pixles that aren't FITC / All pixels that aren't FITC) * 100
+cy3per_fitcratio = cy3per_fitc./cy3per_fitcn; % ((Cy3 AND FITC pixels / FITC pixels) * 100)) / ((Cy3 pixles that aren't FITC / All pixels that aren't FITC) * 100)
 
 % 3. unique data points (average A, B, 1, 2)  
 labelsubjdxreg = strcat(labeltable(2:end, 1), labeltable(2:end,2), labeltable(2:end, 3), labeltable(2:end, 5));  
