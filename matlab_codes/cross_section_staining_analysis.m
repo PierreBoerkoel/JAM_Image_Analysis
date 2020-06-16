@@ -58,7 +58,8 @@ for i = 1:length(imglist)
 
     
     % 1. create a cy3 (red) mask 
-    Iimg= imread(fullfile(imglist(i).folder,imglist(i).name)); Iimg = Iimg(:,:,1:3);
+    Iimg = imread(fullfile(imglist(i).folder,imglist(i).name));
+    Iimg = Iimg(:,:,1:3);
     imgSize = size(Iimg);
     if all(imgSize == [1104 1376 3])
         pixres = 0.454;
@@ -78,7 +79,15 @@ for i = 1:length(imglist)
 
     % 2. create a fitc (green) mask 
     Ifitc = Iimg(:,:,2);
-    Ifitc_mask = Ifitc > FITCthreshold; 
+    Ifitc_mask = Ifitc > FITCthreshold;
+
+    if i == 1
+        fitc_threshold_image = bsxfun(@times, Iimg, cast(Ifitc_mask, 'like', Iimg));
+        imwrite(fitc_threshold_image, fullfile(outfolder, ['fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
+
+        cy3_threshold_image = bsxfun(@times, Iimg, cast(Icy3_mask, 'like', Iimg));
+        imwrite(cy3_threshold_image, fullfile(outfolder, ['cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
+    end
         
     % 3. cy3 & fitc
     Icy3_fitc = Icy3_mask&Ifitc_mask;
