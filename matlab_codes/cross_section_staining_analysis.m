@@ -80,14 +80,6 @@ for i = 1:length(imglist)
     % 2. create a fitc (green) mask 
     Ifitc = Iimg(:,:,2);
     Ifitc_mask = Ifitc > FITCthreshold;
-
-    if i == 1
-        fitc_threshold_image = bsxfun(@times, Iimg, cast(Ifitc_mask, 'like', Iimg));
-        imwrite(fitc_threshold_image, fullfile(outfolder, ['fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
-
-        cy3_threshold_image = bsxfun(@times, Iimg, cast(Icy3_mask, 'like', Iimg));
-        imwrite(cy3_threshold_image, fullfile(outfolder, ['cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
-    end
         
     % 3. cy3 & fitc
     Icy3_fitc = Icy3_mask&Ifitc_mask;
@@ -118,8 +110,11 @@ for i = 1:length(imglist)
     end
 
     % make layer masks from segmentation 
-    Ilayer = zeros(size(I)); 
-    labelposition_allLayers = []; 
+    Ilayer = zeros(size(I));
+    labelposition_allLayers = [];
+
+    threshold_mask = ones(size(I));
+
     for k = 1:7 % for each layer
         myind = k; 
 
@@ -131,7 +126,7 @@ for i = 1:length(imglist)
         labelposition = nanmean(Iind,1);
 
         labelposition_filled = labelposition;
-            
+
         % horizontal gap: grab nearest neighbor 
         if any(isnan(labelposition))
             blankind = find(isnan(labelposition));
@@ -146,6 +141,34 @@ for i = 1:length(imglist)
         labelmask = repmat(labelposition_filled,[size(I,1),1]); 
         labelmask2 = ones(size(I));
         labelmask2(X<labelmask) = 0;
+
+        % only create threshold images for the first image
+        if i == 1
+            switch k
+                case 1
+                    % don't consider anything above layer 1
+                    threshold_mask(X<labelmask) = 0;
+                case 7
+                    % don't consider anything below layer 7
+                    threshold_mask(X>labelmask) = 0;
+
+                    % create a masked image that shows all FITC pixels above
+                    % threshold at maximum intensity
+                    fitc_max_intensity_threshold = bsxfun(@times, Ifitc_mask, 255);
+                    fitc_max_intensity_threshold = bsxfun(@times, fitc_max_intensity_threshold, threshold_mask);
+                    fitc_max_intensity_threshold = double(cat(3, fitc_max_intensity_threshold, fitc_max_intensity_threshold, fitc_max_intensity_threshold));
+                    fitc_max_intensity_threshold(:,:,1) = 0;
+                    fitc_max_intensity_threshold(:,:,3) = 0;
+
+                    % create a masked image that shows all Cy3 pixels above
+                    % threshold at maximum intensity
+                    cy3_max_intensity_threshold = bsxfun(@times, Icy3_mask, 255);
+                    cy3_max_intensity_threshold = bsxfun(@times, cy3_max_intensity_threshold, threshold_mask);
+                    cy3_max_intensity_threshold = double(cat(3, cy3_max_intensity_threshold, cy3_max_intensity_threshold, cy3_max_intensity_threshold));
+                    cy3_max_intensity_threshold(:,:,2) = 0;
+                    cy3_max_intensity_threshold(:,:,3) = 0;
+            end
+        end
 
         Ilayer = Ilayer + labelmask2; 
         labelposition_allLayers = [labelposition_allLayers; labelposition_filled]; 
@@ -241,7 +264,11 @@ writetable(array2table(fitcnorm_unique),fullfile(csvfolder,[groupname,'_','fitcn
 writetable(array2table(thickum_unique), fullfile(csvfolder,[groupname,'_','thickum_unique.csv'])); 
 writetable(array2table(cy3per_fitc_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitc_unique.csv'])); 
 writetable(array2table(cy3per_fitcn_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcn_unique.csv'])); 
-writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv'])); 
+writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv']));
+
+% write our masked images to the output
+imwrite(fitc_max_intensity_threshold, fullfile(outfolder, ['fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
+imwrite(cy3_max_intensity_threshold, fullfile(outfolder, ['cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
 end
 
 
