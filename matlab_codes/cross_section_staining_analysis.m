@@ -1,4 +1,4 @@
-function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder)
+function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder, exclusion_data)
 % Input 
 % * imagefolder 
 %   * this given location should contain 
@@ -198,9 +198,26 @@ for i = 1:length(imglist)
     layerfitc = zeros(1,6);
     layernfitc = zeros(1,6); 
     layercy3fitc = zeros(1,6);
-    layercy3nfitc = zeros(1,6); 
+    layercy3nfitc = zeros(1,6);
+
+    % layer(s) to exclude from analysis
+    exclusion_layers = str2double(exclusion_data{ismember(exclusion_data, myfile), 2});
 
     for k = 1:6
+        % set layer data to NaN if excluded; entire image (all layers)
+        % excluded if exclusion_layers = 7; no layers excluded if
+        % exclusion_layers = 0
+        if exclusion_layers == k || exclusion_layers == 7
+            layervols(k) = NaN;
+            layerthicks(k) = NaN;
+            layercy3(k) = NaN;
+            layerfitc(k) = NaN;
+            layernfitc(k) = NaN;
+            layercy3fitc(k) = NaN;
+            layercy3nfitc(k) = NaN;
+            continue
+        end
+
         layervols(k) = nnz(Ilayer == k);
         layerthicks(k) = mean(cdist(k,:))*pixres;
         layercy3(k) = nnz(Ilayer == k & Icy3_mask);
