@@ -1,4 +1,4 @@
-function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder, exclusion_data)
+function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder, exclusion_data, desired_threshold_image)
 % Input 
 % * imagefolder 
 %   * this given location should contain 
@@ -142,8 +142,8 @@ for i = 1:length(imglist)
         labelmask2 = ones(size(I));
         labelmask2(X<labelmask) = 0;
 
-        % only create threshold images for the first image
-        if i == 1
+        % only create threshold images for the desired image(s)
+        if myfile == desired_threshold_image
             switch k
                 case 1
                     % don't consider anything above layer 1
@@ -200,14 +200,12 @@ for i = 1:length(imglist)
     layercy3fitc = zeros(1,6);
     layercy3nfitc = zeros(1,6);
 
-    % layer(s) to exclude from analysis
-    exclusion_layers = str2double(exclusion_data{ismember(exclusion_data, myfile), 2});
+    exclusion_layers = exclusion_data{ismember(exclusion_data, myfile), 2};
 
     for k = 1:6
-        % set layer data to NaN if excluded; entire image (all layers)
-        % excluded if exclusion_layers = 7; no layers excluded if
-        % exclusion_layers = 0
-        if exclusion_layers == k || exclusion_layers == 7
+        % set layer data to NaN if excluded
+        if ~ismember(string(0), exclusion_layers) && ismember(string(k), exclusion_layers)
+            disp(['Excluding layer ', num2str(k), ' from ', myfile]);
             layervols(k) = NaN;
             layerthicks(k) = NaN;
             layercy3(k) = NaN;
@@ -284,8 +282,8 @@ writetable(array2table(cy3per_fitcn_unique),fullfile(csvfolder,[groupname,'_','c
 writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv']));
 
 % write our masked images to the output
-imwrite(fitc_max_intensity_threshold, fullfile(outfolder, ['fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
-imwrite(cy3_max_intensity_threshold, fullfile(outfolder, ['cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
+imwrite(fitc_max_intensity_threshold, fullfile(outfolder, [desired_threshold_image(1:end-4), '_fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
+imwrite(cy3_max_intensity_threshold, fullfile(outfolder, [desired_threshold_image(1:end-4), '_cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
 end
 
 
