@@ -1,4 +1,4 @@
-function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder)
+function cross_section_staining_analysis(imagefolder, Cy3threshold, FITCthreshold, outfolder, exclusion_data, desired_threshold_image)
 % Input 
 % * imagefolder 
 %   * this given location should contain 
@@ -58,7 +58,8 @@ for i = 1:length(imglist)
 
     
     % 1. create a cy3 (red) mask 
-    Iimg= imread(fullfile(imglist(i).folder,imglist(i).name)); Iimg = Iimg(:,:,1:3);
+    Iimg = imread(fullfile(imglist(i).folder,imglist(i).name));
+    Iimg = Iimg(:,:,1:3);
     imgSize = size(Iimg);
     if all(imgSize == [1104 1376 3])
         pixres = 0.454;
@@ -78,7 +79,7 @@ for i = 1:length(imglist)
 
     % 2. create a fitc (green) mask 
     Ifitc = Iimg(:,:,2);
-    Ifitc_mask = Ifitc > FITCthreshold; 
+    Ifitc_mask = Ifitc > FITCthreshold;
         
     % 3. cy3 & fitc
     Icy3_fitc = Icy3_mask&Ifitc_mask;
@@ -109,8 +110,11 @@ for i = 1:length(imglist)
     end
 
     % make layer masks from segmentation 
-    Ilayer = zeros(size(I)); 
-    labelposition_allLayers = []; 
+    Ilayer = zeros(size(I));
+    labelposition_allLayers = [];
+
+    threshold_mask = ones(size(I));
+
     for k = 1:7 % for each layer
         myind = k; 
 
@@ -122,7 +126,7 @@ for i = 1:length(imglist)
         labelposition = nanmean(Iind,1);
 
         labelposition_filled = labelposition;
-            
+
         % horizontal gap: grab nearest neighbor 
         if any(isnan(labelposition))
             blankind = find(isnan(labelposition));
@@ -137,6 +141,34 @@ for i = 1:length(imglist)
         labelmask = repmat(labelposition_filled,[size(I,1),1]); 
         labelmask2 = ones(size(I));
         labelmask2(X<labelmask) = 0;
+
+        % only create threshold images for the desired image(s)
+        if myfile == desired_threshold_image
+            switch k
+                case 1
+                    % don't consider anything above layer 1
+                    threshold_mask(X<labelmask) = 0;
+                case 7
+                    % don't consider anything below layer 7
+                    threshold_mask(X>labelmask) = 0;
+
+                    % create a masked image that shows all FITC pixels above
+                    % threshold at maximum intensity
+                    fitc_max_intensity_threshold = bsxfun(@times, Ifitc_mask, 255);
+                    fitc_max_intensity_threshold = bsxfun(@times, fitc_max_intensity_threshold, threshold_mask);
+                    fitc_max_intensity_threshold = double(cat(3, fitc_max_intensity_threshold, fitc_max_intensity_threshold, fitc_max_intensity_threshold));
+                    fitc_max_intensity_threshold(:,:,1) = 0;
+                    fitc_max_intensity_threshold(:,:,3) = 0;
+
+                    % create a masked image that shows all Cy3 pixels above
+                    % threshold at maximum intensity
+                    cy3_max_intensity_threshold = bsxfun(@times, Icy3_mask, 255);
+                    cy3_max_intensity_threshold = bsxfun(@times, cy3_max_intensity_threshold, threshold_mask);
+                    cy3_max_intensity_threshold = double(cat(3, cy3_max_intensity_threshold, cy3_max_intensity_threshold, cy3_max_intensity_threshold));
+                    cy3_max_intensity_threshold(:,:,2) = 0;
+                    cy3_max_intensity_threshold(:,:,3) = 0;
+            end
+        end
 
         Ilayer = Ilayer + labelmask2; 
         labelposition_allLayers = [labelposition_allLayers; labelposition_filled]; 
@@ -166,9 +198,24 @@ for i = 1:length(imglist)
     layerfitc = zeros(1,6);
     layernfitc = zeros(1,6); 
     layercy3fitc = zeros(1,6);
-    layercy3nfitc = zeros(1,6); 
+    layercy3nfitc = zeros(1,6);
+
+    exclusion_layers = exclusion_data{ismember(exclusion_data, myfile), 2};
 
     for k = 1:6
+        % set layer data to NaN if excluded
+        if ~ismember(string(0), exclusion_layers) && ismember(string(k), exclusion_layers)
+            disp(['Excluding layer ', num2str(k), ' from ', myfile]);
+            layervols(k) = NaN;
+            layerthicks(k) = NaN;
+            layercy3(k) = NaN;
+            layerfitc(k) = NaN;
+            layernfitc(k) = NaN;
+            layercy3fitc(k) = NaN;
+            layercy3nfitc(k) = NaN;
+            continue
+        end
+
         layervols(k) = nnz(Ilayer == k);
         layerthicks(k) = mean(cdist(k,:))*pixres;
         layercy3(k) = nnz(Ilayer == k & Icy3_mask);
@@ -232,7 +279,11 @@ writetable(array2table(fitcnorm_unique),fullfile(csvfolder,[groupname,'_','fitcn
 writetable(array2table(thickum_unique), fullfile(csvfolder,[groupname,'_','thickum_unique.csv'])); 
 writetable(array2table(cy3per_fitc_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitc_unique.csv'])); 
 writetable(array2table(cy3per_fitcn_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcn_unique.csv'])); 
-writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv'])); 
+writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv']));
+
+% write our masked images to the output
+imwrite(fitc_max_intensity_threshold, fullfile(outfolder, [desired_threshold_image(1:end-4), '_fitc_threshold_', num2str(FITCthreshold), '_image.tif']));
+imwrite(cy3_max_intensity_threshold, fullfile(outfolder, [desired_threshold_image(1:end-4), '_cy3_threshold_', num2str(Cy3threshold), '_image.tif']));
 end
 
 
