@@ -10,9 +10,9 @@ param_name <- 'cy3norm'; myylim = c(0,5); myylabel <- 'Layer-wise normalized % o
 # param_name <- 'thickum'; myylim = c(0,85); myylabel <- 'thickness (um)'
 
 # label columns
-labeltable <- read.csv(paste0(mytablepath,'/geoffrey_r_labeltable_new.csv'))
+labeltable <- read.csv(paste0(mytablepath,'/alis_r_labeltable_new.csv'))
 colnames(labeltable) <- c('Label','Subject','Dx','Region')
-param <- read.csv(paste0(mytablepath,'/geoffrey_data_new.csv'))
+param <- read.csv(paste0(mytablepath,'/alis_r_data_new.csv'))
 colnames(param) <- c('RNFL','GCL','IPL','INL','OPL','ONL')
 data_wide = cbind(labeltable,param)
 

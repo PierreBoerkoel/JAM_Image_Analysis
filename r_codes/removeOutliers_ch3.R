@@ -28,7 +28,7 @@ myOutliers <- mysubsetLayers < myLB | mysubsetLayers > myUB
 
 # 4.3 Remove outliers 
 mysubsetLayers_no <- mysubsetLayers 
-mysubsetLayers_no[myOutliers] = 'NA' 
+mysubsetLayers_no[myOutliers] = 'NA'
 
 # 5. Replace the original 
 mysubset[,which(colnames(mysubset)=="RNFL"):which(colnames(mysubset)=="ONL")] = mysubsetLayers_no
