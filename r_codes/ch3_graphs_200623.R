@@ -1,27 +1,29 @@
 remove(list=ls())
 
+fitc_group = 'GFAP'
+
 mytablepath = '/Users/pierreboerkoel/Desktop/AD Project'
-param_name <- 'cy3norm'; myylim = c(0,3); myylabel <- 'Layer-wise normalized % Aβ immunoreactivity'
-# param_name <- 'fitcnorm'; myylim = c(0,4); myylabel <- 'Layer-wise normalized % IBA-1 immunoreactivity'
-# param_name <- 'cy3_and_fitc'; myylim = c(0,0.3); myylabel <- 'Layer-wise normalized % Aβ and IBA-1 immunoreactivity'
-# param_name <- 'cy3per_fitc'; myylim = c(0,60); myylabel <- 'Layer-wise % Aβ immunoreactivity in a IBA-1 immunoreactive area'
+#param_name <- 'cy3norm'; myylim = c(0,4); myylabel <- paste('Normalized % ',fitc_group,' immunoreactivity')
+#param_name <- 'fitcnorm'; myylim = c(0,30); myylabel <- paste('Normalized % ',fitc_group,' immunoreactivity')
+#param_name <- 'cy3_and_fitc'; myylim = c(0,0.3); myylabel <- paste('Normalized % Aβ and ',fitc_group,'  immunoreactivity')
+param_name <- 'cy3per_fitc'; myylim = c(0,30); myylabel <- paste('% Aβ immunoreactivity in a ',fitc_group,'  immunoreactive area')
 
 # param_name <- 'cy3per_fitcn'
 # param_name <- 'cy3per_fitcratio'
 # param_name <- 'thickum'; myylim = c(0,85); myylabel <- 'thickness (um)'
 
-labeltable <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_labeltable.csv'))
+labeltable <- read.csv(paste0(mytablepath,'/GFAP_TUBB_Data/ALL_GFAP_TUBB_labeltable.csv'))
 colnames(labeltable) <- c('Label','Subject','Dx','Region')
-param <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_',param_name,'.csv'))
+param <- read.csv(paste0(mytablepath,'/GFAP_TUBB_Data/ALL_GFAP_TUBB_',param_name,'.csv'))
 colnames(param) <- c('RNFL','GCL','IPL','INL','OPL','ONL')
 data_wide = cbind(labeltable,param)
 
 # Remove Outliers
 source('/Users/pierreboerkoel/git/ADImageAnalysis/JAM_Image_Analysis/r_codes/removeOutliers_ch3.R')
-data_wide_clean <- removeOutliers_ch3(data_wide,'IBA-1','Normal','C');
-mytmp <- removeOutliers_ch3(data_wide,'IBA-1','Normal','P'); data_wide_clean = rbind(data_wide_clean, mytmp);
-mytmp <- removeOutliers_ch3(data_wide,'IBA-1','AD','C'); data_wide_clean = rbind(data_wide_clean, mytmp);
-mytmp <- removeOutliers_ch3(data_wide,'IBA-1','AD','P'); data_wide_clean = rbind(data_wide_clean, mytmp);
+data_wide_clean <- removeOutliers_ch3(data_wide,fitc_group,'Normal','C');
+mytmp <- removeOutliers_ch3(data_wide,fitc_group,'Normal','P'); data_wide_clean = rbind(data_wide_clean, mytmp);
+mytmp <- removeOutliers_ch3(data_wide,fitc_group,'AD','C'); data_wide_clean = rbind(data_wide_clean, mytmp);
+mytmp <- removeOutliers_ch3(data_wide,fitc_group,'AD','P'); data_wide_clean = rbind(data_wide_clean, mytmp);
 
 #install.packages('reshape2')
 library(reshape2)
@@ -40,23 +42,18 @@ data$Diagnosis <- gsub("Normal", "Control", data$Diagnosis)
 library(ggpubr)
 #install.packages("viridis")  # Install
 library("viridis")
-#, width = 850, height = 850, res = 80
 
-png(filename = paste0(mytablepath,'/IBA-1 Results/',param_name,'_IBA-1_updated_layout_outline_default.png'))
+png(filename = paste0(mytablepath,'/',fitc_group,' Results/Updated Graphs/',param_name,'_',fitc_group,'_updated_layout_outline_pval.png'), width=850, height=850, res=80)
 
-#p <- ggboxplot(data[data$Label=='IBA-1',], x = "Layer", y="Value", order= c('RNFL','GCL','IPL','INL','OPL','ONL'), color="Dx",
-#               facet.by = "Region", labelOutliers='TRUE',add="jitter", ylim=myylim, ylab=myylabel, outlier.shape=8)
-p <- ggbarplot(data[data$Label=='IBA-1',], x = "Layer", y="Value", order = c('RNFL','GCL','IPL','INL','OPL','ONL'),
-               color="Diagnosis", facet.by = "Region", panel.labs = list(Region = c("Central", "Peripheral")), ylab=myylabel, lab.size = "100", position = position_dodge(0.9),
+p <- ggbarplot(data[data$Label==fitc_group,], x = "Layer", y="Value", order = c('RNFL','GCL','IPL','INL','OPL','ONL'),
+               fill="Diagnosis", facet.by = "Region", panel.labs = list(Region = c("Central", "Peripheral")), ylab=myylabel, lab.size = "100", position = position_dodge(0.9),
                ylim=myylim, add = c("mean_se"), palette="Set1", size = 0.7)
-p + stat_compare_means(aes(group = Diagnosis), method = "wilcox.test", label = "p.signif", hide.ns=TRUE, label.y=c(myylim[2]*0.99))+
+p + stat_compare_means(aes(group = Diagnosis), method = "wilcox.test", label = "p.format", hide.ns=FALSE, label.y=c(myylim[2]*0.99))+
   font("ylab", size = 16)+
   font("xlab", size = 16)+
   font("xy.text", size = 14)+
   theme(strip.text.x = element_text(size = 14))+
-  guides(color = guide_legend(title = "",
+  guides(fill = guide_legend(title = "",
                               label = TRUE))
-
-#  ggsave(paste0(mytablepath,'/IBA-1 Results/',param_name,'_IBA-1_updated_layout.tiff'), p, device = "tiff", dpi = 400)
 
 dev.off()
