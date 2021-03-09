@@ -245,6 +245,7 @@ cy3norm = cy3table./voltable*100; % (Cy3 pixels / total pixels) * 100
 fitcnorm = fitctable./voltable*100; % (FITC pixels / total pixels) * 100
 cy3_and_fitc = cy3fitctable./voltable*100; % (Cy3 AND FITC pixels / total pixels) * 100
 cy3per_fitc = cy3fitctable./fitctable*100; % (Cy3 AND FITC pixels / FITC pixels) * 100
+fitcper_cy3 = cy3fitctable./cy3table*100; % (Cy3 AND FITC pixels / Cy3 pixels) * 100
 cy3per_fitcn = cy3nfitctable./fitcntable*100; % (Cy3 pixles that aren't FITC / All pixels that aren't FITC) * 100
 cy3per_fitcratio = cy3per_fitc./cy3per_fitcn; % ((Cy3 AND FITC pixels / FITC pixels) * 100)) / ((Cy3 pixles that aren't FITC / All pixels that aren't FITC) * 100)
 
@@ -253,7 +254,7 @@ labelsubjdxreg = strcat(labeltable(2:end, 1), labeltable(2:end,2), labeltable(2:
 labelsubjdxreg_unique = unique(labelsubjdxreg);
 
 labeltable_unique = {'label'	'subject'	'dx'	'section'	'region'	'regionnum'};
-[thickum_unique, cy3norm_unique, fitcnorm_unique, cy3_and_fitc_unique, cy3per_fitc_unique, cy3per_fitcn_unique, cy3per_fitcratio_unique] = deal([]);
+[thickum_unique, cy3norm_unique, fitcnorm_unique, cy3_and_fitc_unique, fitcper_cy3_unique, cy3per_fitc_unique, cy3per_fitcn_unique, cy3per_fitcratio_unique] = deal([]);
 
 for i = 1:size(labelsubjdxreg_unique,1)
     mydatalabel = labelsubjdxreg_unique(i);
@@ -265,7 +266,8 @@ for i = 1:size(labelsubjdxreg_unique,1)
     cy3norm_unique = [cy3norm_unique; nanmean(cy3norm(mydata_inds,:),1)]; 
     fitcnorm_unique = [fitcnorm_unique; nanmean(fitcnorm(mydata_inds,:),1)];
     cy3_and_fitc_unique = [cy3_and_fitc_unique; nanmean(cy3_and_fitc(mydata_inds,:),1)];
-    cy3per_fitc_unique = [cy3per_fitc_unique; nanmean(cy3per_fitc(mydata_inds,:),1)]; 
+    cy3per_fitc_unique = [cy3per_fitc_unique; nanmean(cy3per_fitc(mydata_inds,:),1)];
+    fitcper_cy3_unique = [fitcper_cy3_unique; nanmean(fitcper_cy3(mydata_inds,:),1)];
     cy3per_fitcn_unique = [cy3per_fitcn_unique; nanmean(cy3per_fitcn(mydata_inds,:),1)]; 
     cy3per_fitcratio_unique = [cy3per_fitcratio_unique; nanmean(cy3per_fitcratio(mydata_inds,:),1)]; 
 end
@@ -274,7 +276,8 @@ labeltable_unique(:,4) = []; labeltable_unique(:,end) = []; labeltable_unique(1,
 % 4. Save output 
 outputfile_name = [groupname,'_measurement_thre',num2str(Cy3threshold),'.mat']; 
 save(fullfile(outfolder,outputfile_name), 'imagefolder', 'pixres', 'Cy3threshold', 'FITCthreshold', ...
-     'labeltable_unique', 'thickum_unique', 'cy3norm_unique', 'fitcnorm_unique', 'cy3per_fitc_unique', 'cy3per_fitcn_unique', 'cy3per_fitcratio_unique');
+     'labeltable_unique', 'thickum_unique', 'cy3norm_unique', 'fitcnorm_unique', 'fitcper_cy3_unique', ...
+     'cy3per_fitc_unique', 'cy3per_fitcn_unique', 'cy3per_fitcratio_unique');
 csvfolder = outfolder;  
 
 writetable(cell2table(labeltable_unique),fullfile(csvfolder,[groupname,'_','labeltable_unique.csv']));
@@ -283,7 +286,8 @@ writetable(array2table(fitcnorm_unique),fullfile(csvfolder,[groupname,'_','fitcn
 writetable(array2table(cy3_and_fitc_unique),fullfile(csvfolder,[groupname,'_','cy3_and_fitc_unique.csv']));
 writetable(array2table(thickum_unique), fullfile(csvfolder,[groupname,'_','thickum_unique.csv'])); 
 writetable(array2table(cy3per_fitc_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitc_unique.csv'])); 
-writetable(array2table(cy3per_fitcn_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcn_unique.csv'])); 
+writetable(array2table(cy3per_fitcn_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcn_unique.csv']));
+writetable(array2table(fitcper_cy3_unique),fullfile(csvfolder,[groupname,'_','fitcper_cy3_unique.csv'])); 
 writetable(array2table(cy3per_fitcratio_unique),fullfile(csvfolder,[groupname,'_','cy3per_fitcratio_unique.csv']));
 
 % write our masked images to the output

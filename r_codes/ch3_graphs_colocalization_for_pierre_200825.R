@@ -4,7 +4,7 @@ mytablepath = '/Users/pierreboerkoel/Desktop/AD Project'
 fitc_group = 'IBA-1'
 
 # load both fitc and fitcn
-param_name <- 'cy3per_fitc'; myylim = c(0,55); myylabel <- 'cy3 colocalized with fitc (%)'
+param_name <- 'cy3per_fitc'; myylim = c(0,50); myylabel <- paste0('% Aβ colocalized with ', fitc_group)
 labeltable <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_labeltable.csv'))
 colnames(labeltable) <- c('Label','Subject','Dx','Region')
 param <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_',param_name,'.csv'))
@@ -46,19 +46,21 @@ names(data_clean)[7]<-"Value" # Long format
 data_clean$Value <- as.numeric(data_clean$Value)
 data <- data_clean
 data$Dx <- gsub("Normal", "Control", data$Dx)
+data$cy3_colocalization <- gsub("\\<fitcn\\>", paste0(fitc_group, ' Negative'), data$cy3_colocalization)
+data$cy3_colocalization <- gsub("\\<fitc\\>", paste0(fitc_group, ' Positive'), data$cy3_colocalization)
 
 # Plot
 library(ggpubr)
 #install.packages("viridis")  # Install
 
-png(filename = paste0(mytablepath,'/', fitc_group, ' Results/Updated Graphs/','coloc_',fitc_group,'_Normal_pval.png'), height = 850, width = 850, res = 80)
+png(filename = paste0(mytablepath,'/', fitc_group, ' Results/IBA-1 Updated Graphs/','coloc_',fitc_group,'_Normal.png'))
 
 p <- ggbarplot(data[data$Label==fitc_group&data$Dx=='Control',], x = "Layer", y="Value",
                order= c('RNFL','GCL','IPL','INL','OPL','ONL'),
                fill="cy3_colocalization", facet.by = "Region",  ylab=myylabel, position = position_dodge(0.8),
-               ylim=myylim, add = c("mean_se"), palette = c("#16C416", "#000000"),
+               ylim=myylim, add = c("mean_se"), palette = c("#000000", "#16C416"),
                panel.labs = list(Region = c("Central", "Peripheral")))
-p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.format", label.y=c(myylim[2]*0.99))+
+p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
   font("ylab", size = 16)+
   font("xlab", size = 16)+
   font("xy.text", size = 14)+
@@ -68,14 +70,14 @@ p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", 
 
 dev.off()
 
-png(filename = paste0(mytablepath,'/',fitc_group,' Results/Updated Graphs/','coloc_',fitc_group,'_AD_pval.png'), height=850, width=850, res=80)
+png(filename = paste0(mytablepath,'/',fitc_group,' Results/IBA-1 Updated Graphs/','coloc_',fitc_group,'_AD.png'))
 
 p <- ggbarplot(data[data$Label==fitc_group&data$Dx=='AD',], x = "Layer", y="Value",
                order= c('RNFL','GCL','IPL','INL','OPL','ONL'),
                fill="cy3_colocalization", facet.by = "Region",  ylab=myylabel, position = position_dodge(0.8),
-               ylim=myylim, add = c("mean_se"), palette = c("#16C416", "#000000"),
+               ylim=myylim, add = c("mean_se"), palette = c("#000000", "#16C416"),
                panel.labs = list(Region = c("Central", "Peripheral")))
-p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.format", label.y=c(myylim[2]*0.99))+
+p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
   font("ylab", size = 16)+
   font("xlab", size = 16)+
   font("xy.text", size = 14)+
