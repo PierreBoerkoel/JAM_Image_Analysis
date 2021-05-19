@@ -1,32 +1,32 @@
 remove(list=ls())
 
-mytablepath = '/Users/pierreboerkoel/Desktop/AD Project'
-fitc_group = 'IBA-1'
+mytablepath = '/Users/pierreboerkoel/Desktop/AD Project - MBP2'
+fitc_group = 'GFAP'
 
 # load both fitc and fitcn
 param_name <- 'cy3per_fitc'; myylim = c(0,50); myylabel <- paste0('% Aβ colocalized with ', fitc_group)
-labeltable <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_labeltable.csv'))
+labeltable <- read.csv(paste0(mytablepath,'/GFAP_TUBB_Data/ALL_GFAP_TUBB_labeltable.csv'))
 colnames(labeltable) <- c('Label','Subject','Dx','Region')
-param <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_',param_name,'.csv'))
+param <- read.csv(paste0(mytablepath,'/GFAP_TUBB_Data/ALL_GFAP_TUBB_',param_name,'.csv'))
 colnames(param) <- c('RNFL','GCL','IPL','INL','OPL','ONL')
 clcol <- matrix(rep('fitc', each=nrow(param)), nrow=nrow(param)); colnames(clcol) <- 'cy3_colocalization'
 data_wide1 = cbind(labeltable,clcol,param);
 
 # Remove Outliers
-source('/Users/pierreboerkoel/git/ADImageAnalysis/JAM_Image_Analysis/r_codes/removeOutliers_ch3.R')
+source('/Users/pierreboerkoel/Programming/AD_Project/JAM_Image_Analysis/r_codes/removeOutliers_ch3.R')
 data_wide_clean1 <- removeOutliers_ch3(data_wide1,fitc_group,'Normal','C');
 mytmp <- removeOutliers_ch3(data_wide1,fitc_group,'Normal','P'); data_wide_clean1 = rbind(data_wide_clean1, mytmp);
 mytmp <- removeOutliers_ch3(data_wide1,fitc_group,'AD','C'); data_wide_clean1 = rbind(data_wide_clean1, mytmp);
 mytmp <- removeOutliers_ch3(data_wide1,fitc_group,'AD','P'); data_wide_clean1 = rbind(data_wide_clean1, mytmp);
 
 param_name2 <- 'cy3per_fitcn';
-param2 <- read.csv(paste0(mytablepath,'/IBA-1_Data/ALL_IBA-1_',param_name2,'.csv'))
+param2 <- read.csv(paste0(mytablepath,'/GFAP_TUBB_Data/ALL_GFAP_TUBB_',param_name2,'.csv'))
 colnames(param2) <- c('RNFL','GCL','IPL','INL','OPL','ONL')
 clcol2 <- matrix(rep('fitcn', each=nrow(param2)), nrow=nrow(param2)); colnames(clcol2) <- 'cy3_colocalization'
 data_wide2 = cbind(labeltable,clcol2,param2);
 
 # Remove Outliers
-source('/Users/pierreboerkoel/git/ADImageAnalysis/JAM_Image_Analysis/r_codes/removeOutliers_ch3.R')
+source('/Users/pierreboerkoel/Programming/AD_Project/JAM_Image_Analysis/r_codes/removeOutliers_ch3.R')
 data_wide_clean2 <- removeOutliers_ch3(data_wide2,fitc_group,'Normal','C');
 mytmp <- removeOutliers_ch3(data_wide2,fitc_group,'Normal','P'); data_wide_clean2 = rbind(data_wide_clean2, mytmp);
 mytmp <- removeOutliers_ch3(data_wide2,fitc_group,'AD','C'); data_wide_clean2 = rbind(data_wide_clean2, mytmp);
@@ -53,36 +53,74 @@ data$cy3_colocalization <- gsub("\\<fitc\\>", paste0(fitc_group, ' Positive'), d
 library(ggpubr)
 #install.packages("viridis")  # Install
 
-png(filename = paste0(mytablepath,'/', fitc_group, ' Results/IBA-1 Updated Graphs/','coloc_',fitc_group,'_Normal.png'))
+png(filename = paste0(mytablepath,'/', fitc_group, ' Results/GFAP Updated Graphs 05-18-21/','coloc_',fitc_group,'_Normal_pval_BH.png'), width = 850, height = 850, res = 107)
 
 p <- ggbarplot(data[data$Label==fitc_group&data$Dx=='Control',], x = "Layer", y="Value",
                order= c('RNFL','GCL','IPL','INL','OPL','ONL'),
                fill="cy3_colocalization", facet.by = "Region",  ylab=myylabel, position = position_dodge(0.8),
                ylim=myylim, add = c("mean_se"), palette = c("#000000", "#16C416"),
                panel.labs = list(Region = c("Central", "Peripheral")))
-p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
-  font("ylab", size = 16)+
-  font("xlab", size = 16)+
-  font("xy.text", size = 14)+
-  theme(strip.text.x = element_text(size = 14))+
-  guides(fill = guide_legend(title = "",
-                             label = TRUE))
+# p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
+#   font("ylab", size = 16)+
+#   font("xlab", size = 16)+
+#   font("xy.text", size = 14)+
+#   theme(strip.text.x = element_text(size = 14))+
+#   guides(fill = guide_legend(title = "",
+#                              label = TRUE))
+
+p_adjusted <- compare_means(formula = Value ~ cy3_colocalization,
+                            data = data[data$Label==fitc_group&data$Dx=='Control',],
+                            group.by = c("Region", "Layer"),
+                            method = "wilcox.test",
+                            p.adjust.method = "BH")
+
+p + stat_pvalue_manual(p_adjusted,
+                       x = "Layer",
+                       y.position = c(myylim[2]*0.99),
+                       position = position_dodge(0.8),
+                       label = "p = {p.format}",
+                       label.size = 2.5) +
+  stat_pvalue_manual(p_adjusted,
+                     x = "Layer",
+                     y.position = c(myylim[2]*0.95),
+                     position = position_dodge(0.8),
+                     label = "BH = {p.adj}",
+                     label.size = 2.5)
 
 dev.off()
 
-png(filename = paste0(mytablepath,'/',fitc_group,' Results/IBA-1 Updated Graphs/','coloc_',fitc_group,'_AD.png'))
+png(filename = paste0(mytablepath,'/',fitc_group,' Results/GFAP Updated Graphs 05-18-21/','coloc_',fitc_group,'_AD_pval_BH.png'), width = 850, height = 850, res = 107)
 
 p <- ggbarplot(data[data$Label==fitc_group&data$Dx=='AD',], x = "Layer", y="Value",
                order= c('RNFL','GCL','IPL','INL','OPL','ONL'),
                fill="cy3_colocalization", facet.by = "Region",  ylab=myylabel, position = position_dodge(0.8),
                ylim=myylim, add = c("mean_se"), palette = c("#000000", "#16C416"),
                panel.labs = list(Region = c("Central", "Peripheral")))
-p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
-  font("ylab", size = 16)+
-  font("xlab", size = 16)+
-  font("xy.text", size = 14)+
-  theme(strip.text.x = element_text(size = 14))+
-  guides(fill = guide_legend(title = "",
-                             label = TRUE))
+# p + stat_compare_means(aes(group = cy3_colocalization), method = "wilcox.test", label = "p.signif", hide.ns = TRUE, label.y=c(myylim[2]*0.99))+
+#   font("ylab", size = 16)+
+#   font("xlab", size = 16)+
+#   font("xy.text", size = 14)+
+#   theme(strip.text.x = element_text(size = 14))+
+#   guides(fill = guide_legend(title = "",
+#                              label = TRUE))
+
+p_adjusted <- compare_means(formula = Value ~ cy3_colocalization,
+                            data = data[data$Label==fitc_group&data$Dx=='AD',],
+                            group.by = c("Region", "Layer"),
+                            method = "wilcox.test",
+                            p.adjust.method = "BH")
+
+p + stat_pvalue_manual(p_adjusted,
+                       x = "Layer",
+                       y.position = c(myylim[2]*0.99),
+                       position = position_dodge(0.8),
+                       label = "p = {p.format}",
+                       label.size = 2.5) +
+  stat_pvalue_manual(p_adjusted,
+                     x = "Layer",
+                     y.position = c(myylim[2]*0.95),
+                     position = position_dodge(0.8),
+                     label = "BH = {p.adj}",
+                     label.size = 2.5)
 
 dev.off()
